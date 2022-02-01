@@ -1,0 +1,6 @@
+---
+install_drive: /dev/sda
+wired_interface: enp0s3
+boot_partition_suffix: '1'
+root_partition_suffix: '2'
+user_name: oxodao

@@ -1,0 +1,76 @@
+---
+- hosts: all
+  become: yes
+  tags: [ partition ]
+
+  tasks:
+    - name: Setup LUKS encryption for root FS
+      block:
+        - name: Copy keyfile
+          copy:
+            src: 'files/keyfile'
+            dest: /root/keyfile
+
+        - name: Destroy existing LUKS volume
+          luks_device:
+            device: /dev/VolumeGroup00/root
+            state: absent
+
+        - name: Create and open LUKS volume
+          luks_device:
+            device: /dev/VolumeGroup00/root
+            keyfile: /root/keyfile
+            name: root
+            state: opened
+
+        - name: Get UUID for root LUKS volume
+          command: blkid -s UUID -o value /dev/VolumeGroup00/root
+          register: root_luks_uuid
+          changed_when: false
+
+    - name: Create FS
+      block:
+        - name: Create FAT32 FS in boot partition
+          filesystem:
+            dev: '{{ install_drive }}{{ boot_partition_suffix }}'
+            fstype: vfat
+            opts: -F32
+            force: yes
+
+        - name: Create ext4 FS in root partition
+          filesystem:
+            dev: /dev/mapper/root
+            fstype: ext4
+            opts: -O '^has_journal'
+            force: yes
+
+        - name: Get UUID for boot filesystem
+          command: blkid -s UUID -o value '{{ install_drive }}{{ boot_partition_suffix }}'
+          register: boot_uuid
+          changed_when: false
+
+        - name: Get UUID for root filesystem
+          command: blkid -s UUID -o value /dev/mapper/root
+          register: root_uuid
+          changed_when: false
+
+    - name: Mount filesystems
+      block:
+        - name: Mount root filesystem
+          mount:
+            path: /mnt
+            src: UUID={{ root_uuid.stdout }}
+            fstype: ext4
+            state: mounted
+
+        - name: Create mountpoint for boot volume
+          file:
+            path: /mnt/boot
+            state: directory
+
+        - name: Mount boot filesystem
+          mount:
+            path: /mnt/boot
+            src: UUID={{ boot_uuid.stdout }}
+            fstype: vfat
+            state: mounted

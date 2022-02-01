@@ -1,0 +1,51 @@
+---
+- hosts: all
+  become: yes
+  tags: [ partitions ]
+
+  tasks:
+    - name: Repartition drive
+      block:
+        - name: Wipe install drive
+          command: find /dev -wholename "{{ install_drive }}" -exec wipefs --force --all {} \;
+
+        - name: Create boot partition
+          parted:
+            device: '{{ install_drive }}'
+            label: gpt
+            number: 1
+            part_end: 512MB
+            name: boot
+            flags: [boot, esp]
+            state: present
+
+        - name: Create root partition
+          parted:
+            device: '{{ install_drive }}'
+            label: gpt
+            number: 2
+            part_start: 512MB
+            name: root
+            flags: [lvm]
+            state: present
+
+
+    - name: Setup LVM root & tmp volumes
+      block:
+        - name: Remove existing volume group
+          lvg:
+            vg: VolumeGroup00
+            force: yes
+            state: absent
+        - name: Configure volume group
+          lvg:
+            vg: VolumeGroup00
+            pvs: [ '{{ install_drive }}{{ root_partition_suffix }}' ]
+        - name: Configure logical volumes
+          lvol:
+            vg: VolumeGroup00
+            lv: '{{ item.lv }}'
+            size: '{{ item.size }}'
+          loop:
+            - { lv: tmp, size: 512M }
+            - { lv: root, size: "100%FREE" }
