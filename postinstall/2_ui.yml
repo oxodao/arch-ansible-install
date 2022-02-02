@@ -53,3 +53,12 @@
         state: started
         scope: user
         enabled: yes
+
+    - name: Setting GTK theme
+      become: no
+      copy:
+        content: |
+          [Settings]
+          gtk-theme-name=Adwaita-drk
+        dest: "/home/{{ ansible_user }}/.config/gtk-3.0/settings.ini"
+      tags: [ theme ]

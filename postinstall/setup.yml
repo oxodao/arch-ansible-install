@@ -2,3 +2,4 @@
 - import_playbook: 0_base.yml
 - import_playbook: 1_dotfiles.yml
 - import_playbook: 2_ui.yml
+- import_playbook: 3_thirdparty.yml

@@ -1,0 +1,51 @@
+---
+- hosts: all
+  become: yes
+  tags: [ 3rd ]
+
+  tasks:
+    # Doing it manually to be up to date and install custom theme easily
+    - name: Downloading vscode
+      become: no
+      get_url:
+        url: https://code.visualstudio.com/sha/download?build=stable&os=linux-x64
+        dest: /opt/vscode.tar.gz
+
+    - name: Create vscode dir
+      become: no
+      file:
+        dest: "/opt/vscode"
+        state: directory
+        owner: "{{ ansible_user }}"
+        group: "{{ ansible_user }}"
+        mode: '0755'
+
+    - name: Extracting vscode
+      become: no
+      unarchive:
+        src: /opt/vscode.tar.gz
+        dest: /opt/vscode
+        extra_opts: [--strip-components=1]
+        remote_src: yes
+
+    - name: Removing targz
+      become: no
+      file:
+        path: /opt/vscode.tar.gz
+        state: absent
+
+    - name: Symlinking vscode
+      become: yes
+      file:
+        src: "/opt/vscode/bin/code"
+        dest: "/usr/local/bin/code"
+        state: link
+
+    - name: Setting up extensions
+      become: no
+      visual_studio_code_install_extension:
+        executable: "code"
+        name: "{{ item }}"
+      with_items: "{{ vscode_extensions }}"
+      tags: [ ext ]
+

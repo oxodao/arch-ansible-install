@@ -5,8 +5,8 @@
 - sshelter
 
 ## Missing steps
-- Installing oh-my-zsh
 - Installing vim plugins
+- Setting GTK theme to adwaita dark
 
 ## Package my software for the AUR
 - metaprint

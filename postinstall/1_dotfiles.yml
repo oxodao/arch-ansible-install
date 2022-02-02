@@ -30,6 +30,31 @@
       with_items: [ ".memo", ".zshrc.custom" ]
       become: no
 
+    - name: Download zsh installer
+      get_url:
+        url: https://raw.githubusercontent.com/ohmyzsh/ohmyzsh/master/tools/install.sh
+        dest: /tmp/zsh-installer.sh
+        mode: '0777'
+
+    - name: Execute the zsh-installer.sh
+      shell: /tmp/zsh-installer.sh --unattended
+      become: no
+
+    - name: Remove the zsh-installer.sh
+      file: 
+        path: /tmp/zsh-installer.sh
+        state: absent
+
+    - name: Remove the generated zshrc
+      file: 
+        path: "/home/{{ ansible_user }}/.zshrc"
+        state: absent
+
+    - name: Installing mattboll's zsh theme
+      copy:
+        src: files/mattboll.zsh-theme
+        dest: "/home/{{ ansible_user }}/.oh-my-zsh/themes/mattboll.zsh-theme"
+
     - name: Symlinking all the things
       file:
         src: "/opt/dotfiles/{{ item.src }}"
@@ -56,3 +81,8 @@
     - name: xdg dirs
       command: xdg-user-dirs-update
       become: no
+
+    - name: Setting zsh by default
+      user:
+        name: "{{ ansible_user }}"
+        shell: /bin/zsh

@@ -1,9 +1,8 @@
 # Arch Ansible Install
 
-This is a custom version of https://github.com/jsf9k/ansible-arch-install/ and https://github.com/jsf9k/ansible-home
-
 ## Initial Setup
 Everything in this section relates to the ansible setup in the base directory
+This is a custom version of https://github.com/jsf9k/ansible-arch-install/
 
 - `yay -S sshpass mkpasswd`
 - Clone this repo

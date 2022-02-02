@@ -50,6 +50,7 @@ official_softwares:
   - i3-gaps
   - i3blocks
   - dunst
+  - gnome-themes-standard
   - rofi
   - rofi-emoji
   - rofi-calc
@@ -104,6 +105,7 @@ official_softwares:
   - mupdf
   - obs-studio
   - pavucontrol
+  - pyenv
   - sane-airscan
   - seahorse
   - signal-desktop
@@ -133,6 +135,7 @@ aur_softwares:
   - nerd-fonts-hack
   - notion-app-enhanced
   - postman-bin
+  - pyenv-virtualenv
   - thunar-shares-plugin
   - spotify
   - spicetify-cli
@@ -149,3 +152,23 @@ services_to_enable:
 
 user_services_to_enable:
   - ssh-agent
+
+vscode_extensions:
+  - casualjim.gotemplate
+  - cschleiden.vscode-github-actions
+  - editorconfig.editorconfig
+  - esbenp.prettier-vscode
+  - github.copilot
+  - golang.go
+  - irongeek.vscode-env
+  - jackmacwindows.vscode-computercraft
+  - lemmmy.computercraft-extension-pack
+  - mechatroner.rainbow-csv
+  - mihelcic.colored-regions
+  - robbowen.synthwave-vscode
+  - sumneko.lua
+  - tomaciazek.ansible
+  - tyriar.luna-paint
+  - vscodevim.vim
+  - whatwedo.twig
+  - wholroyd.jinja
