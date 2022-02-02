@@ -1,0 +1,55 @@
+---
+- hosts: all
+  become: yes
+  tags: [ ui ]
+
+  tasks:
+    # @TODO: Do this properly
+    - name: Setting the keyboard layout in gdm (1)
+      command: localectl set-x11-keymap fr
+    - name: Setting the keyboard layout in gdm (2)
+      command: localectl set-keymap fr
+
+    - name: Setting the keyboard layout in Xorg
+      become: yes
+      copy:
+        src: files/00-keyboard.conf
+        dest: /etc/X11/xorg.conf.d/00-keyboard.conf
+
+    - name: Check if fonts folder exists
+      become: no
+      delegate_to: localhost
+      register: font_fi
+      stat:
+        path: 'files/fonts'
+
+
+    - name: Installing Windows fonts
+      when: font_fi.stat.exists
+      become: yes
+      copy:
+        src: files/fonts/
+        dest: /usr/share/fonts/windows
+        mode: '0755'
+
+    - name: Setting i3 as the default login WM
+      become: yes
+      copy:
+        content: 'XSession=i3'
+        dest: "/var/lib/AccountsService/users/{{ ansible_user }}"
+
+    - name: Enabling services
+      with_items: "{{ services_to_enable }}"
+      service:
+        name: "{{ item }}"
+        state: started
+        enabled: yes
+
+    - name: Enabling user services
+      become: no
+      with_items: "{{ user_services_to_enable }}"
+      service:
+        name: "{{ item }}"
+        state: started
+        scope: user
+        enabled: yes

@@ -1,0 +1,83 @@
+---
+- hosts: all
+  become: yes
+  tags: [ base ]
+
+  vars:
+    # Check for update before install
+    appimage_softwares:
+      - name: Neovim
+        exec: nvim
+        url: 'https://github.com/neovim/neovim/releases/download/v0.6.1/nvim.appimage'
+        other_exec: vim
+
+      - name: Bitwarden
+        exec: bitwarden
+        url: 'https://vault.bitwarden.com/download/?app=desktop&platform=linux'
+
+  tasks:
+    - name: "Install packages"
+      pacman:
+        name: "{{ official_softwares }}"
+        state: present
+      become: yes
+      tags: [ preinstall ]
+
+    - name: Installing yay!
+      kewlfft.aur.aur:
+        name: yay
+        use: makepkg
+        state: present
+      become: no
+      tags: [ preinstall ]
+
+    - name: "Installing {{ item }}"
+      kewlfft.aur.aur:
+        name: "{{ item }}"
+        state: present
+      with_items: "{{ aur_softwares }}"
+      become: no
+      tags: [ preinstall ]
+
+    - name: Owning the opt directory
+      file:
+        path: /opt
+        owner: "{{ ansible_user }}"
+        group: "{{ ansible_user }}"
+      tags: [ opt ]
+
+    - name: Creating the appimages dir
+      file:
+        path: /opt/appimages
+        state: directory
+        owner: "{{ ansible_user }}"
+        group: "{{ ansible_user }}"
+        mode: '0755'
+      tags: [ opt ]
+
+    - name: "Installing {{ item.name }}"
+      get_url:
+        url: "{{ item.url }}"
+        dest: "/opt/appimages/{{ item.exec }}.appimage"
+        mode: '0777'
+      with_items: "{{ appimage_softwares }}"
+      tags: [ appimages ]
+
+    - name: "Symlinking {{ item.name }}"
+      file:
+        src: "/opt/appimages/{{ item.exec }}.appimage"
+        dest: "/usr/local/bin/{{ item.exec }}"
+        mode: '0755'
+        state: link
+      with_items: "{{ appimage_softwares }}"
+      tags: [ appimages ]
+
+    - name: "Symlinking other exec {{ item.name }}"
+      file:
+        src: "/opt/appimages/{{ item.exec }}.appimage"
+        dest: "/usr/local/bin/{{ item.other_exec }}"
+        mode: '0755'
+        state: link
+      when: item.other_exec is defined
+      with_items: "{{ appimage_softwares }}"
+      tags: [ appimages ]

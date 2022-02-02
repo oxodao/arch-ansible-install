@@ -1,0 +1,58 @@
+---
+- hosts: all
+  become: yes
+  tags: [ dotfiles ]
+
+  tasks:
+    - name: Cloning
+      git:
+        repo: https://github.com/oxodao/dotfiles.git
+        dest: /opt/dotfiles
+      become: no
+
+    - name: Creating folders
+      file:
+        dest: "/home/{{ansible_user}}/{{ item }}"
+        state: directory
+        owner: "{{ ansible_user }}"
+        group: "{{ ansible_user }}"
+        mode: '0755'
+      with_items: [ ".config", ".config/alacritty", "Documents", "Images", "Musiques", "Vidéos", "Téléchargements" ]
+      become: no
+
+    - name: Creating memo and .zshrc.custom
+      file:
+        path: "/home/{{ ansible_user }}/{{ item }}"
+        owner: "{{ ansible_user }}"
+        group: "{{ ansible_user }}"
+        state: touch
+        mode: '0600'
+      with_items: [ ".memo", ".zshrc.custom" ]
+      become: no
+
+    - name: Symlinking all the things
+      file:
+        src: "/opt/dotfiles/{{ item.src }}"
+        dest: "/home/{{ ansible_user }}/{{ item.dest }}"
+        state: link
+      with_items: "{{ mappings }}"
+      become: no
+
+    - name: Checking if there is a resources file for this machine
+      stat:
+        path: "/opt/dotfiles/resources.{{ inventory_hostname }}"
+      register: res
+      become: no
+
+    - name: Symlinking resources file
+      file:
+        src: "/opt/dotfiles/resources.{{ inventory_hostname }}"
+        dest: "/home/{{ ansible_user }}/.Xresources.{{ inventory_hostname}}"
+        state: link
+        mode: '0755'
+      when: res.stat.exists
+      become: no
+
+    - name: xdg dirs
+      command: xdg-user-dirs-update
+      become: no

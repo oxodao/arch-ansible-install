@@ -1,8 +1,10 @@
 # Arch Ansible Install
 
-This is a custom version of https://github.com/jsf9k/ansible-arch-install/
+This is a custom version of https://github.com/jsf9k/ansible-arch-install/ and https://github.com/jsf9k/ansible-home
 
-## Setup
+## Initial Setup
+Everything in this section relates to the ansible setup in the base directory
+
 - `yay -S sshpass mkpasswd`
 - Clone this repo
 - Set your machine up in `inventory.yml`
@@ -14,6 +16,9 @@ This is a custom version of https://github.com/jsf9k/ansible-arch-install/
     - `systemctl restart sshd`
 - `ansible-playbook -i inventory.yml setup.yml`
 
-## Next
+## Post-install setup
+Everything in this section relates to the ansible setup in the postinstall directory
 
-The machine is ready in a CLI state. To have a fully fledged desktop you can now use this repo: https://github.com/oxodao/ansible-arch-desktop
+- create folder `files/fonts` and put all Windows fonts in it (Not given for legal reasons)
+- `ssh-copy-id USERNAME@HOST`
+- `ansible-playbook -i inventory.yml setup.yml`

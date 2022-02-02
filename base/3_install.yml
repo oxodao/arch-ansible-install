@@ -5,7 +5,7 @@
 
   tasks:
     - name: Run pacstrap
-      command: pacstrap /mnt base dhclient dhcpcd efibootmgr grub linux linux-firmware lvm2 netctl openssh python reflector sudo
+      command: pacstrap /mnt base base-devel dhclient dhcpcd efibootmgr grub linux linux-firmware lvm2 netctl openssh python reflector sudo
 
     - name: Restrict reflector to only FR mirrors
       ansible.builtin.lineinfile:
