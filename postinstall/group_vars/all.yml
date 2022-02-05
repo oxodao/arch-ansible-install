@@ -144,6 +144,9 @@ aur_softwares:
   - slack-desktop
   - skypeforlinux-stable-bin
 
+  # My softwares
+  - metaprint-bin
+
 services_to_enable:
   - bluetooth
   - docker
