@@ -146,6 +146,7 @@ aur_softwares:
 
   # My softwares
   - metaprint-bin
+  - sshelter-bin
 
 services_to_enable:
   - bluetooth
