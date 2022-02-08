@@ -54,11 +54,24 @@
         scope: user
         enabled: yes
 
+    - name: Creating GTK folders
+      file:
+        dest: "/home/{{ansible_user}}/.config/gtk-3.0"
+        state: directory
+        owner: "{{ ansible_user }}"
+        group: "{{ ansible_user }}"
+        mode: '0755'
+
+    # @TODO: Install "Klorax. Retrofuturism" GTK theme
+
     - name: Setting GTK theme
       become: no
       copy:
         content: |
           [Settings]
-          gtk-theme-name=Adwaita-drk
+          gtk-theme-name=Adwaita-dark
+          gtk-recent-files-max-age=0
+          gtk-recent-files-limit=0
+          gtk-recent-files-enabled = 0
         dest: "/home/{{ ansible_user }}/.config/gtk-3.0/settings.ini"
       tags: [ theme ]

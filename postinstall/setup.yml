@@ -3,3 +3,4 @@
 - import_playbook: 1_dotfiles.yml
 - import_playbook: 2_ui.yml
 - import_playbook: 3_thirdparty.yml
+- import_playbook: 4_firefox.yml

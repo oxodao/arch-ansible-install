@@ -30,20 +30,27 @@
       with_items: [ ".memo", ".zshrc.custom" ]
       become: no
 
+    - name: Check zsh install
+      stat: path=/home/{{ ansible_user }}/.oh-my-zsh
+      register: p
+
     - name: Download zsh installer
       get_url:
         url: https://raw.githubusercontent.com/ohmyzsh/ohmyzsh/master/tools/install.sh
         dest: /tmp/zsh-installer.sh
         mode: '0777'
+      when: not p.stat.exists
 
     - name: Execute the zsh-installer.sh
       shell: /tmp/zsh-installer.sh --unattended
       become: no
+      when: not p.stat.exists
 
     - name: Remove the zsh-installer.sh
       file: 
         path: /tmp/zsh-installer.sh
         state: absent
+      when: not p.stat.exists
 
     - name: Remove the generated zshrc
       file: 
@@ -69,6 +76,7 @@
       register: res
       become: no
 
+    # @TODO Seems to break as xdg-user-dirs.dirs is created (Maybe by the package ? Weird.)
     - name: Symlinking resources file
       file:
         src: "/opt/dotfiles/resources.{{ inventory_hostname }}"

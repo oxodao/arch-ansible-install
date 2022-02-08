@@ -81,3 +81,5 @@
       when: item.other_exec is defined
       with_items: "{{ appimage_softwares }}"
       tags: [ appimages ]
+
+    # @TODO: Install & enable TLP and powertop

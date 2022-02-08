@@ -1,0 +1,47 @@
+---
+- hosts: all
+  become: no
+  tags: [ firefox ]
+
+
+  # @TODO: could be directly using the role instead of vendoring everything, maybe
+  # For some reason extensions are installed but they stay disabled
+  # => Make them enabled + allowed in private browsing
+  # @TODO: Default firefox settings (Download + All ext things in the tab bar, removing home/refresh button, adding search bar, enabling favbar)
+  # @TODO maybe if possible to be idempotent: Auto import bookmarks (Nameless google / agenda / keep / fb / insta / twitter / youtube / twitch / HN / lobste.rs)
+  # @TODO: Installing user styles: Dark instagram + my own HN/lobsters
+
+  tasks:
+    - name: Create profiles
+      become: no
+      firefox_profile:
+        name: "default-release"
+        path: "/home/{{ ansible_user }}/.mozilla/firefox"
+        state: present
+      register: create_profile
+
+    - name: Install extensions
+      become: no
+      firefox_addon:
+        name: "{{ item }}"
+        profile_path: "{{ create_profile.profile_path }}"
+        state: present
+      with_items:
+        - ublock-origin
+        - sponsorblock
+        - bitwarden-password-manager
+        - personal-blocklist
+        - don-t-fuck-with-paste
+        - betterttv
+        - klorax-retrofuturism
+
+    # - name: Install user prefs
+    #   lineinfile:
+    #     path: "{{ create_profile.profile_path }}/prefs.js"
+    #     create: true
+    #     regexp: '^user_pref\("{{ pref.key }}",\s*\S+?\);\s*$'
+    #     line: 'user_pref("{{ pref.key }}", {{ (''"%s"'' | format(pref.value)) if pref.value is string else (pref.value | lower) }});'
+    #   with_items: "{{ firefox_profile.value.preferences | default({}) | dict2items }}"
+    #   loop_control:
+    #     loop_var: pref
+    #   tags: firefox
