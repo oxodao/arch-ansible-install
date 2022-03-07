@@ -2,8 +2,8 @@ all:
   children:
     ungrouped:
       hosts:
-        vm:
-          ansible_host: 192.168.1.162
+        remus:
+          ansible_host: 192.168.82.186
           ansible_port: 22
           ansible_user: root
           ansible_password: password

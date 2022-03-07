@@ -2,8 +2,8 @@ all:
   children:
     ungrouped:
       hosts:
-        severusold:
-          ansible_host: 192.168.1.114
+        remus:
+          ansible_host: 192.168.1.224
           ansible_port: 22
           ansible_user: oxodao
           ansible_ssh_extra_args: -o UserKnownHostsFile=/dev/null -o StrictHostKeyChecking=no
