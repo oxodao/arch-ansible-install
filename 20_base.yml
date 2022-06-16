@@ -1,0 +1,112 @@
+---
+- hosts: all
+  become: true
+  tags: [ base ]
+
+  vars:
+    pacstrap_packages:
+      - base
+      - base-devel
+      - linux
+      - linux-firmware
+      - dhclient
+      - dhcpcd
+      - efibootmgr
+      - grub
+      - openssh
+      - python
+      - reflector
+      - sudo
+      - bolt
+
+    init_services_to_enable:
+      - sshd
+      - bolt
+
+  tasks:
+    - name: Run pacstrap
+      command: "pacstrap /mnt {{ pacstrap_packages | join(' ') }}"
+
+    - name: Restrict reflector to only FR mirrors
+      lineinfile:
+        insertafter: \# --country
+        line: --country "France"
+        path: /mnt/etc/xdg/reflector/reflector.conf
+
+    - name: Generate fstab
+      command: genfstab -U /mnt >> /mnt/etc/fstab
+
+    - name: Set local timezone
+      command: arch-chroot /mnt ln -sf /usr/share/zoneinfo/Europe/Paris /etc/localtime
+
+    - name: Generate adjtime file
+      command: arch-chroot /mnt hwclock --systohc
+
+    - name: Setup locales
+      block:
+        - name: Configure locale.gen
+          lineinfile:
+            dest: /mnt/etc/locale.gen
+            regexp: '{{ item.regex }}'
+            line: '{{ item.line }}'
+          loop:
+            - { regex: 'en_US\.UTF-8 UTF-8', line: 'en_US.UTF-8 UTF-8'}
+            - { regex: 'fr_FR\.UTF-8 UTF-8', line: 'fr_FR.UTF-8 UTF-8'}
+
+        - name: Generate locale.conf
+          command: arch-chroot /mnt locale-gen
+
+        - name: Create locale.conf
+          copy:
+            content: 'LANG=fr_FR.UTF-8'
+            dest: /mnt/etc/locale.conf
+
+    - name: Set console keymap
+      copy:
+        content: 'KEYMAP=fr-pc'
+        dest: /mnt/etc/vconsole.conf
+
+    - name: Set hostname
+      copy:
+        content: '{{ inventory_hostname }}'
+        dest: /mnt/etc/hostname
+
+    - name: Configure hosts
+      template:
+        src: templates/hosts.j2
+        dest: /mnt/etc/hosts
+        mode: 0644
+
+    # - name: Enable wanted services (sshd, ...)
+
+    - name: Setup initramfs
+      block:
+        - name: Add mkinitcpio.conf hooks
+          lineinfile:
+            dest: /mnt/etc/mkinitcpio.conf
+            regexp: ^HOOKS=
+            line: HOOKS=(base udev autodetect keyboard keymap modconf block encrypt filesystems fsck)
+
+        - name: Create new initramfs
+          command: arch-chroot /mnt mkinitcpio -p linux
+
+    - name: Grab the UUID
+      tags: [ grub ]
+      command: blkid -s -o value '{{ install_drive }}{{ root_partition_name }}'
+      register: root_luks_uuid
+      changed_when: false
+
+    - name: Setup grub
+      tags: [ grub ]
+      block:
+        - name: Add commandline information to grub config
+          lineinfile:
+            dest: /mnt/etc/default/grub
+            regexp: ^GRUB_CMDLINE_LINUX=
+            line: GRUB_CMDLINE_LINUX="cryptdevice=UUID={{ root_luks_uuid.stdout }}:root root=/dev/mapper/cryptroot"
+
+        - name: Install grub
+          command: arch-chroot /mnt grub-install --target=x86_64-efi --efi-directory=/boot --bootloader-id=GRUB
+
+        - name: Create grub config
+          command: arch-chroot /mnt grub-mkconfig -o /boot/grub/grub.cfg

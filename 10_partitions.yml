@@ -44,11 +44,6 @@
             state: opened
             name: cryptroot
             keyfile: /root/keyfile
-          
-        - name: Grab the UUID
-          command: blkid -s -o value '{{ install_drive }}{{ root_partition_name }}'
-          register: root_luks_uuid
-          changed_when: false
 
         - name: Create EFI fs
           filesystem:
