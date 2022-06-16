@@ -1,0 +1,21 @@
+---
+- hosts: all
+  become: true
+  tags: [ checks ]
+
+  tasks:
+    - name: Abort if not an Arch install media
+      fail: { msg: "This host is not booted from the Arch install media!" }
+      when: ansible_nodename != 'archiso'
+      tags: [ quick_exit ]
+
+    - name: Using french keyboard layout
+      command: loadkeys fr
+      tags: [ keyboard ]
+
+    - name: Synchronize clock via NTP
+      command: timedatectl set-ntp true
+      tags: [ sync_clock ]
+
+    - name: Notify
+      command: wall Checks OK, starting the setup

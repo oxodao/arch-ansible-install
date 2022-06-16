@@ -1,0 +1,3 @@
+---
+- import_playbook: 00_checks.yml
+- import_playbook: 10_partitions.yml
