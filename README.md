@@ -1,5 +1,9 @@
 # Oxodao's Archlinux setup
 
+## Disclaimer
+
+This repository uses ansible 2.9
+
 ## Initial setup
 
 First we'll do the initial setup of the machine, this will install a full archlinux ready to be booted
@@ -13,6 +17,8 @@ $ yay -S sshpass mkpasswd
 ```
 $ ./make_files.sh
 ```
+3.1. If you want to install custom fonts (i.e. the windows ones), put them in `files/fonts/`
+3.2. Some software requires config with password, those should go in `files/vaulted/` (Not implemented yet)
 4. Start your computer and boot the archiso usb key
     - `$ loadkeys fr`
     - `$ passwd` => Set the password to `password`

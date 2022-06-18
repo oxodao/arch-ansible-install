@@ -3,30 +3,32 @@
   become: true
   tags: [ base ]
 
-  vars:
-    pacstrap_packages:
-      - base
-      - base-devel
-      - linux
-      - linux-firmware
-      - dhclient
-      - dhcpcd
-      - efibootmgr
-      - grub
-      - openssh
-      - python
-      - reflector
-      - sudo
-      - bolt
-
-    init_services_to_enable:
-      - sshd
-      - dhcpcd
-      - bolt
-
   tasks:
     - name: Run pacstrap
       command: "pacstrap /mnt {{ pacstrap_packages | join(' ') }}"
+
+    - name: Check whether yay is already installed
+      register: yay_exists
+      tags: [ aur ]
+      stat:
+        path: /usr/bin/yay
+
+    # - name: Cloning the yay repository
+    #   tags: [ aur ]
+    #   when: not yay_exists.stat.exists
+    #   command: arch-chroot /mnt git clone https://aur.archlinux.org/yay.git /tmp/yay
+
+    # - name: Installing yay
+    #   tags: [ aur ]
+    #   when: not yay_exists.stat.exists
+    #   command: arch-chroot /mnt "cd /tmp/yay && makepkg -si"
+
+    # - name: Removing the yay repository
+    #   tags: [ aur ]
+    #   when: not yay_exists.stat.exists
+    #   file:
+    #     path: /mnt/tmp/yay
+    #     state: absent
 
     - name: Notify
       command: wall Base packages installed
@@ -138,6 +140,9 @@
     - name: Setup grub
       tags: [ grub ]
       block:
+        # @TODO: initrd (intel/amd)-ucode
+        # https://wiki.archlinux.org/title/microcode
+
         - name: Add commandline information to grub config
           lineinfile:
             dest: /mnt/etc/default/grub

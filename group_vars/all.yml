@@ -4,3 +4,177 @@ ansible_port: 22
 ansible_ssh_extra_args: -o UserKnownHostsFile=/dev/null -o StrictHostKeyChecking=no
 
 ssh_key_filename: 'id_ed25519.pub'
+
+mappings:
+  - { src: "resources", dest: ".Xresources" }
+  - { src: "alacritty/alacritty.yml", dest: ".config/alacritty/alacritty.yml" }
+  - { src: "termite", dest: ".config/termite" }
+  - { src: "scripts", dest: ".config/scripts" }
+  - { src: "wall.png", dest: ".config/wall.png" }
+  - { src: "zsh", dest: ".config/zsh" }
+  - { src: "zshrc", dest: ".zshrc" }
+  - { src: "tmux", dest: ".config/tmux" }
+  - { src: "tmux.conf", dest: ".tmux.conf" }
+  - { src: "nvim", dest: ".config/nvim" }
+  - { src: "mpv", dest: ".config/mpv" }
+  - { src: "i3", dest: ".config/i3" }
+  - { src: "rofi", dest: ".config/rofi" }
+  - { src: "dunst", dest: ".config/dunst" }
+  - { src: "metaprint", dest: ".config/metaprint" }
+  - { src: "gitconfig", dest: ".gitconfig" }
+  - { src: "gitignore", dest: ".gitignore" }
+  - { src: "user-dirs.dirs", dest: ".config/user-dirs.dirs" }
+  - { src: "systemd_user", dest: ".config/systemd" }
+
+pacstrap_packages:
+  # Base stuff
+  - base
+  - base-devel
+  - linux
+  - linux-firmware
+  - grub
+
+  # Drivers / machine related stuff
+  - amd-ucode
+  - intel-ucode
+  - libva-mesa-driver
+  - mesa
+  - xf86-video-amdgpu
+  - xf86-video-intel
+  - vulkan-radeon
+
+  # Java stuff
+  - jre-openjdk
+  - jdk8-openjdk
+  - jre11-openjdk
+  # - jdk16-adoptopenjdk # AUR
+
+  # Other stuff
+  - alacritty
+  - android-file-transfer
+  - android-tools
+  - arandr
+  - bitwarden
+  - blueman
+  - bluez-utils
+  - bolt
+  - caprine
+  - chntpw
+  - chromium
+  - cifs-utils
+  - deluge-gtk
+  - dhclient
+  - dhcpcd
+  - direnv
+  - docker
+  - dunst
+  - efibootmgr
+  - engrampa
+  - eog
+  - exa
+  - fakeroot
+  - feh
+  - ffmpegthumbnailer
+  - firefox
+  - firefox-i18n-fr
+  - fuse
+  - gdm
+  - gimp
+  - git
+  - gnome-themes-standard
+  - gvfs
+  - gvfs-mtp
+  - gvfs-smb
+  - htop
+  - i3-gaps
+  - i3blocks
+  - i3lock
+  - imagemagick
+  - inetutils
+  - jq
+  - libpng12
+  - libreoffice-fresh
+  - lm_sensors
+  - lxappearance
+  - mitmproxy
+  - mpv
+  - mupdf
+  - neovim
+  - network-manager-applet
+  - networkmanager
+  - obs-studio
+  - openssh
+  - p7zip
+  - pavucontrol
+  - playerctl
+  - pyenv
+  - python
+  - python-pip
+  - reflector
+  - rofi
+  - rofi-calc
+  - rofi-emoji
+  - rsync
+  - s3cmd
+  - sane-airscan
+  - scrot
+  - seahorse
+  - signal-desktop
+  - simple-scan
+  - streamlink
+  - sudo
+  - syncthing
+  - thunar
+  - thunar-archive-plugin
+  - thunar-media-tags-plugin
+  - thunar-volman
+  - thunderbird
+  - thunderbird-i18n-fr
+  - tmate
+  - tmux
+  - tumbler
+  - udiskie
+  - unrar
+  - xclip
+  - xdg-user-dirs
+  - xdotool
+  - xorg-server
+  - xorg-xbacklight
+  - xorg-xkill
+  - xorg-xprop
+  - xournalpp
+  - xsel
+  - xsettingsd
+  - yt-dlp
+  - zsh
+
+aur_packages:
+  - jdownloader2
+  - multimc-bin
+  - nerd-fonts-hack
+  - notion-app-enhanced
+  - postman-bin
+  - pyenv-virtualenv
+  - thunar-shares-plugin
+  - spotify
+  - spicetify-cli
+
+  # Work tools
+  - slack-desktop
+  - skypeforlinux-stable-bin
+
+  # My softwares
+  - metaprint-bin
+  - sshelter-bin
+
+init_services_to_enable:
+  - bluetooth
+  - bolt
+  - dhcpcd
+  - docker
+  - gdm
+  - NetworkManager
+  - sshd
+
+user_services_to_enable:
+  - ssh-agent
