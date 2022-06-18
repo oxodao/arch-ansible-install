@@ -1,0 +1,32 @@
+---
+- hosts: all
+  become: true
+  tags: [ unmount ]
+
+  tasks:
+    - name: Unmount boot volume
+      mount:
+        path: /mnt/boot
+        state: unmounted
+
+    - name: Unmount root volume
+      mount:
+        path: /mnt
+        state: unmounted
+
+    - name: Check if LUKS is still opened (debug)
+      register: luks_mounted
+      stat:
+        path: '/dev/mapper/root'
+
+    - name: Close LUKS
+      when: luks_mounted.stat.exists
+      luks_device:
+        device: "/dev/mapper/root"
+        state: closed
+
+    - name: Reboot
+      failed_when: false
+      reboot:
+        connect_timeout: 1
+        reboot_timeout: 1

@@ -42,7 +42,7 @@
           luks_device:
             device: '{{ install_drive }}{{ root_partition_name }}'
             state: opened
-            name: cryptroot
+            name: root
             keyfile: /root/keyfile
 
         - name: Create EFI fs
@@ -54,7 +54,7 @@
 
         - name: Create root fs
           filesystem:
-            dev: '/dev/mapper/cryptroot'
+            dev: '/dev/mapper/root'
             fstype: ext4
             opts: -O '^has_journal'
             force: yes
@@ -65,7 +65,7 @@
           changed_when: false
 
         - name: Grab root UUID
-          command: blkid -s UUID -o value /dev/mapper/cryptroot
+          command: blkid -s UUID -o value /dev/mapper/root
           register: root_uuid
           changed_when: false
           

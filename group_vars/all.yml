@@ -2,3 +2,5 @@ ansible_user: root
 ansible_password: password
 ansible_port: 22
 ansible_ssh_extra_args: -o UserKnownHostsFile=/dev/null -o StrictHostKeyChecking=no
+
+ssh_key_filename: 'id_ed25519.pub'

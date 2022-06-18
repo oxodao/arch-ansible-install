@@ -21,11 +21,15 @@
 
     init_services_to_enable:
       - sshd
+      - dhcpcd
       - bolt
 
   tasks:
     - name: Run pacstrap
       command: "pacstrap /mnt {{ pacstrap_packages | join(' ') }}"
+
+    - name: Notify
+      command: wall Base packages installed
 
     - name: Restrict reflector to only FR mirrors
       lineinfile:
@@ -33,8 +37,38 @@
         line: --country "France"
         path: /mnt/etc/xdg/reflector/reflector.conf
 
-    - name: Generate fstab
-      command: genfstab -U /mnt >> /mnt/etc/fstab
+    - name: Grab boot UUID
+      tags: [ grub ]
+      command: blkid -s UUID -o value '{{ install_drive }}{{ boot_partition_name }}'
+      register: boot_uuid
+      changed_when: false
+
+    - name: Grab root UUID
+      tags: [ grub ]
+      command: blkid -s UUID -o value /dev/mapper/root
+      register: root_uuid
+      changed_when: false
+
+    - name: Grab luks UUID
+      tags: [ grub ]
+      command: "blkid -s UUID -o value {{ install_drive }}{{ root_partition_name }}"
+      register: luks_uuid
+      changed_when: false
+
+    - name: Create fstab
+      tags: [ grub ]
+      block:
+        - name: Generate fstab
+          command: genfstab -U /mnt >> /mnt/etc/fstab
+
+        - name: Add root volume to fstab
+          mount:
+            fstab: /mnt/etc/fstab
+            path: /
+            src: UUID={{ root_uuid.stdout }}
+            fstype: ext4
+            opts: defaults
+            state: present
 
     - name: Set local timezone
       command: arch-chroot /mnt ln -sf /usr/share/zoneinfo/Europe/Paris /etc/localtime
@@ -77,9 +111,20 @@
         dest: /mnt/etc/hosts
         mode: 0644
 
-    # - name: Enable wanted services (sshd, ...)
+    - name: Enable wanted services
+      command: "arch-chroot /mnt systemctl enable {{ init_services_to_enable | join(' ') }}"
+
+    - name: Notify
+      command: wall Standard setup done
+
+    - name: Grab root UUID
+      tags: [ grub ]
+      command: blkid -s UUID -o value /dev/mapper/root
+      register: root_uuid
+      changed_when: false
 
     - name: Setup initramfs
+      tags: [ grub ]
       block:
         - name: Add mkinitcpio.conf hooks
           lineinfile:
@@ -90,12 +135,6 @@
         - name: Create new initramfs
           command: arch-chroot /mnt mkinitcpio -p linux
 
-    - name: Grab the UUID
-      tags: [ grub ]
-      command: blkid -s -o value '{{ install_drive }}{{ root_partition_name }}'
-      register: root_luks_uuid
-      changed_when: false
-
     - name: Setup grub
       tags: [ grub ]
       block:
@@ -103,10 +142,64 @@
           lineinfile:
             dest: /mnt/etc/default/grub
             regexp: ^GRUB_CMDLINE_LINUX=
-            line: GRUB_CMDLINE_LINUX="cryptdevice=UUID={{ root_luks_uuid.stdout }}:root root=/dev/mapper/cryptroot"
+            line: GRUB_CMDLINE_LINUX="cryptdevice=UUID={{ luks_uuid.stdout }}:root root=/dev/mapper/root"
 
         - name: Install grub
           command: arch-chroot /mnt grub-install --target=x86_64-efi --efi-directory=/boot --bootloader-id=GRUB
 
         - name: Create grub config
           command: arch-chroot /mnt grub-mkconfig -o /boot/grub/grub.cfg
+
+    - name: Notify
+      tags: [ grub ]
+      command: wall Grub installed
+
+    - name: Setup user account
+      tags: [ user ]
+      block:
+        #region Useful when debugging in VM without doing the full reinstall
+        - name: Check if user exists
+          ignore_errors: True
+          register: result
+          command: arch-chroot /mnt getent passwd oxodao > /dev/null
+          when: inventory_hostname == 'vm'
+
+        - name: Delete old user account
+          command: arch-chroot /mnt userdel {{ username }}
+          when: inventory_hostname == 'vm' and result.rc != 2
+        #endregion
+
+        - name: Create user account
+          command: arch-chroot /mnt useradd --create-home --user-group --groups wheel {{ username }} --password {{ lookup('file', 'passwords/password') }}
+
+        - name: Create user's ssh directory
+          file:
+            path: /mnt/home/{{ username }}/.ssh
+            state: directory
+
+        - name: Set mode, owner, and group on user's ssh directory
+          command: arch-chroot /mnt {{ item }}
+          loop:
+            - chmod 0700 /home/{{ username }}/.ssh
+            - chown {{ username }}:{{ username }} /home/{{ username }}/.ssh
+
+        - name: Copy over ssh key from current Ansible controller as an authorized key
+          copy:
+            src: '{{ lookup("env", "HOME") }}/.ssh/{{ ssh_key_filename }}'
+            dest: /mnt/home/{{ username }}/.ssh/authorized_keys
+
+        - name: Set mode, owner, and group on user's authorized_key file
+          command: arch-chroot /mnt {{ item }}
+          loop:
+            - chmod 0600 /home/{{ username }}/.ssh/authorized_keys
+            - chown {{ username }}:{{ username }} /home/{{ username }}/.ssh/authorized_keys
+
+        - name: Give passwordless sudo access to wheel group
+          copy:
+            content: '%wheel ALL=(ALL) NOPASSWD: ALL'
+            dest: /mnt/etc/sudoers.d/wheel
+            validate: /usr/sbin/visudo --check --file=%s
+
+    - name: Notify
+      tags: [ user ]
+      command: wall User account created

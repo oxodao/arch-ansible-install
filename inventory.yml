@@ -2,6 +2,9 @@ all:
   children:
     ungrouped:
       hosts:
+        localhost:
+          ansible_host: localhost
+          ansible_user: oxodao
         remus: # Work's Framework
           ansible_host: 192.168.82.186
           username: oxodao
@@ -15,7 +18,7 @@ all:
           boot_partition_name: p1
           root_partition_name: p2
         vm: # Virtualbox test VM
-          ansible_host: 192.168.1.129
+          ansible_host: 192.168.1.238
           username: oxodao
           install_drive: /dev/sda
           boot_partition_name: 1
