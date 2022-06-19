@@ -128,17 +128,16 @@ official_softwares:
 
 
 aur_softwares:
+  - git-delta-git
   - jdownloader2
   - jre8-adoptopenjdk
-  - minecraft-launcher
   - multimc-bin
   - nerd-fonts-hack
   - notion-app-enhanced
   - postman-bin
   - pyenv-virtualenv
-  - thunar-shares-plugin
-  - spotify
-  - spicetify-cli
+    # - spotify # Fuck GPG
+    # - spicetify-cli
 
   # Work tools
   - slack-desktop

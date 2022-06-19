@@ -1,6 +1,6 @@
 ---
 install_drive: /dev/nvme0n1
-wired_interface: enp0s3
+wired_interface: wlan0
 boot_partition_suffix: 'p1'
 root_partition_suffix: 'p2'
 user_name: oxodao
