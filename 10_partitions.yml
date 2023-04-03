@@ -4,89 +4,87 @@
   tags: [ partitions ]
 
   tasks:
-    - name: Repartition drive
-      block:
-        - name: Wipe drive signature
-          command: find /dev -wholename "{{ install_drive }}" -exec wipefs --force --all {} \;
+    - name: Wipe drive signature
+      command: find /dev -wholename "{{ install_drive }}" -exec wipefs --force --all {} \;
 
-        - name: Create boot partition
-          parted:
-            name: boot
-            label: 'gpt'
-            device: '{{ install_drive }}'
-            number: 1
-            part_end: 512MB
-            flags: [boot, esp]
-            state: present
+    - name: Create boot partition
+      parted:
+        name: boot
+        label: 'gpt'
+        device: '{{ install_drive }}'
+        number: 1
+        part_end: 512MB
+        flags: [boot, esp]
+        state: present
 
-        - name: Create root partition
-          parted:
-            name: root
-            label: gpt
-            device: '{{ install_drive }}'
-            number: 2
-            part_start: 512MB
-            state: present
+    - name: Create root partition
+      parted:
+        name: root
+        label: gpt
+        device: '{{ install_drive }}'
+        number: 2
+        part_start: 512MB
+        state: present
 
-        - name: Setup LUKS encryption for root fs
-          copy: 
-            src: 'passwords/keyfile'
-            dest: /root/keyfile
+    - name: Setup LUKS encryption for root fs
+      copy: 
+        src: 'passwords/keyfile'
+        dest: /root/keyfile
 
-        - name: Destroy existing LUKS volume
-          luks_device:
-            device: '{{ install_drive }}{{ root_partition_name }}'
-            state: absent
+    - name: Destroy existing LUKS volume
+      luks_device:
+        device: '{{ install_drive }}{{ root_partition_name }}'
+        state: absent
 
-        - name: Create and open LUKS volume
-          luks_device:
-            device: '{{ install_drive }}{{ root_partition_name }}'
-            state: opened
-            name: root
-            keyfile: /root/keyfile
+    - name: Create and open LUKS volume
+      luks_device:
+        device: '{{ install_drive }}{{ root_partition_name }}'
+        state: opened
+        name: root
+        keyfile: /root/keyfile
 
-        - name: Create EFI fs
-          filesystem:
-            dev: '{{ install_drive }}{{ boot_partition_name }}'
-            fstype: vfat
-            opts: -F32
-            force: yes
+    - name: Create EFI fs
+      filesystem:
+        dev: '{{ install_drive }}{{ boot_partition_name }}'
+        fstype: vfat
+        opts: -F32
+        force: yes
 
-        - name: Create root fs
-          filesystem:
-            dev: '/dev/mapper/root'
-            fstype: ext4
-            opts: -O '^has_journal'
-            force: yes
+    - name: Create root fs
+      filesystem:
+        dev: '/dev/mapper/root'
+        fstype: ext4
+        opts: -O '^has_journal'
+        force: yes
 
-        - name: Grab boot UUID
-          command: blkid -s UUID -o value '{{ install_drive }}{{ boot_partition_name }}'
-          register: boot_uuid
-          changed_when: false
+    - name: Grab boot UUID
+      command: blkid -s UUID -o value '{{ install_drive }}{{ boot_partition_name }}'
+      register: boot_uuid
+      changed_when: false
 
-        - name: Grab root UUID
-          command: blkid -s UUID -o value /dev/mapper/root
-          register: root_uuid
-          changed_when: false
-          
-        - name: Mount root
-          mount: 
-            path: /mnt
-            src: UUID={{ root_uuid.stdout }}
-            fstype: ext4
-            state: mounted
+    - name: Grab root UUID
+      command: blkid -s UUID -o value /dev/mapper/root
+      register: root_uuid
+      changed_when: false
+      
+    - name: Mount root
+      mount: 
+        path: /mnt
+        src: UUID={{ root_uuid.stdout }}
+        fstype: ext4
+        state: mounted
 
-        - name: Create mountpoint for boot volume
-          file:
-            path: /mnt/boot
-            state: directory
+    - name: Create mountpoint for boot volume
+      file:
+        path: /mnt/boot
+        state: directory
 
-        - name: Mount boot volume
-          mount:
-            path: /mnt/boot
-            src: UUID={{ boot_uuid.stdout }}
-            fstype: vfat
-            state: mounted
+    - name: Mount boot volume
+      mount:
+        path: /mnt/boot
+        src: UUID={{ boot_uuid.stdout }}
+        fstype: vfat
+        state: mounted
         
     - name: Notify
       command: wall Drive partitioned

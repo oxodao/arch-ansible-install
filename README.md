@@ -36,3 +36,13 @@ When the first playbook is done, you can reboot the machine and log-in. You will
 2. Connect to the internet
 3. Clone the repository
 4. `$ ansible-playbook -i inventory.yml post_setup.yml --limit localhost`
+
+
+
+@TODO:
+setup:
+- [ ] docker group
+- [ ] docker compose (not docker-compose)
+- [ ] install vscode
+- [ ] Keymap
+- [ ] GDM default WM

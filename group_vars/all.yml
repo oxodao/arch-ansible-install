@@ -6,25 +6,10 @@ ansible_ssh_extra_args: -o UserKnownHostsFile=/dev/null -o StrictHostKeyChecking
 ssh_key_filename: 'id_ed25519.pub'
 
 mappings:
-  - { src: "resources", dest: ".Xresources" }
-  - { src: "alacritty/alacritty.yml", dest: ".config/alacritty/alacritty.yml" }
-  - { src: "termite", dest: ".config/termite" }
-  - { src: "scripts", dest: ".config/scripts" }
-  - { src: "wall.png", dest: ".config/wall.png" }
-  - { src: "zsh", dest: ".config/zsh" }
+  - { src: "config", dest: ".config" }
   - { src: "zshrc", dest: ".zshrc" }
-  - { src: "tmux", dest: ".config/tmux" }
-  - { src: "tmux.conf", dest: ".tmux.conf" }
-  - { src: "nvim", dest: ".config/nvim" }
-  - { src: "mpv", dest: ".config/mpv" }
-  - { src: "i3", dest: ".config/i3" }
-  - { src: "rofi", dest: ".config/rofi" }
-  - { src: "dunst", dest: ".config/dunst" }
-  - { src: "metaprint", dest: ".config/metaprint" }
   - { src: "gitconfig", dest: ".gitconfig" }
-  - { src: "gitignore", dest: ".gitignore" }
-  - { src: "user-dirs.dirs", dest: ".config/user-dirs.dirs" }
-  - { src: "systemd_user", dest: ".config/systemd" }
+  - { src: "resources", dest: ".Xresources" }
 
 pacstrap_packages:
   # Base stuff
@@ -33,6 +18,7 @@ pacstrap_packages:
   - linux
   - linux-firmware
   - grub
+  - bat
 
   # Drivers / machine related stuff
   - amd-ucode
@@ -135,6 +121,7 @@ pacstrap_packages:
   - tumbler
   - udiskie
   - unrar
+  - visidata
   - xclip
   - xdg-user-dirs
   - xdotool
@@ -158,14 +145,11 @@ aur_packages:
   - thunar-shares-plugin
   - spotify
   - spicetify-cli
+  - metaprint-bin
 
   # Work tools
-  - slack-desktop
+  - discord_arch_electron
   - skypeforlinux-stable-bin
-
-  # My softwares
-  - metaprint-bin
-  - sshelter-bin
 
 init_services_to_enable:
   - bluetooth

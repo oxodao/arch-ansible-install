@@ -4,3 +4,11 @@
   tags: [ gui ]
 
   tasks:
+  # @TODO:
+  # - Setup GDM to use i3 by default
+  # - Setup GDM & xorg to use azerty
+  # - Setup GDM autologin
+  # - Install the dotfiles
+  # - Setup vscode automagically
+  # - Setup firefox automagically
+  # - Trust the CA in files/CA.crt

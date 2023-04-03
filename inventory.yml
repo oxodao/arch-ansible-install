@@ -19,7 +19,7 @@ all:
           install_drive: /dev/nvme0n1
           boot_partition_name: p1
           root_partition_name: p2
-        
+
         severusdesk: # Desktop
           ansible_host: 192.168.1.10
           username: oxodao
@@ -28,7 +28,14 @@ all:
           root_partition_name: 2
 
         vm: # Virtualbox test VM
-          ansible_host: 192.168.1.238
+          ansible_host: 192.168.14.60
+          username: oxodao
+          install_drive: /dev/sda
+          boot_partition_name: 1
+          root_partition_name: 2
+
+        thinkpad: # Thinkpad test pc
+          ansible_host: 192.168.14.43
           username: oxodao
           install_drive: /dev/sda
           boot_partition_name: 1
