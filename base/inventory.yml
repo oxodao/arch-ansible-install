@@ -14,3 +14,9 @@ all:
           ansible_user: root
           ansible_password: password
           ansible_ssh_extra_args: -o UserKnownHostsFile=/dev/null -o StrictHostKeyChecking=no
+        severusdesk:
+          ansible_host: 192.168.1.10
+          ansible_port: 22
+          ansible_user: root
+          ansible_password: password
+          ansible_ssh_extra_args: -o UserKnownHostsFile=/dev/null -o StrictHostKeyChecking=no
