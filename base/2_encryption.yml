@@ -41,7 +41,6 @@
           filesystem:
             dev: /dev/mapper/root
             fstype: ext4
-            opts: -O '^has_journal'
             force: yes
 
         - name: Get UUID for boot filesystem

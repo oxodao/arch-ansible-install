@@ -17,7 +17,7 @@
         owner: "{{ ansible_user }}"
         group: "{{ ansible_user }}"
         mode: '0755'
-      with_items: [ ".config", ".config/alacritty", "Documents", "Images", "Musiques", "Vidéos", "Téléchargements" ]
+      with_items: [ "Documents", "Images", "Musiques", "Vidéos", "Téléchargements" ]
       become: no
 
     - name: Creating memo and .zshrc.custom

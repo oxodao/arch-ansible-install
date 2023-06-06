@@ -1,23 +1,8 @@
 mappings:
   - { src: "resources", dest: ".Xresources" }
-  - { src: "alacritty/alacritty.yml", dest: ".config/alacritty/alacritty.yml" }
-  - { src: "termite", dest: ".config/termite" }
-  - { src: "scripts", dest: ".config/scripts" }
-  - { src: "wall.png", dest: ".config/wall.png" }
-  - { src: "zsh", dest: ".config/zsh" }
   - { src: "zshrc", dest: ".zshrc" }
-  - { src: "tmux", dest: ".config/tmux" }
-  - { src: "tmux.conf", dest: ".tmux.conf" }
-  - { src: "nvim", dest: ".config/nvim" }
-  - { src: "mpv", dest: ".config/mpv" }
-  - { src: "i3", dest: ".config/i3" }
-  - { src: "rofi", dest: ".config/rofi" }
-  - { src: "dunst", dest: ".config/dunst" }
-  - { src: "metaprint", dest: ".config/metaprint" }
+  - { src: "config", dest: ".config" }
   - { src: "gitconfig", dest: ".gitconfig" }
-  - { src: "gitignore", dest: ".gitignore" }
-  - { src: "user-dirs.dirs", dest: ".config/user-dirs.dirs" }
-  - { src: "systemd_user", dest: ".config/systemd" }
 
 official_softwares:
   - fakeroot
