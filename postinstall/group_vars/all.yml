@@ -66,6 +66,7 @@ official_softwares:
   - unrar
   - youtube-dl
   - zsh
+  - wireguard-tools
 
   # Runtime
   - jdk17-openjdk
@@ -115,15 +116,17 @@ official_softwares:
 
 
 aur_softwares:
+  - docker-compose
   - git-delta-git
   - jdownloader2
   - jre8-adoptopenjdk
+  - k380-function-keys-conf
   - multimc-bin
   - nerd-fonts-hack
   - notion-app-enhanced
   - postman-bin
   - pyenv-virtualenv
-  - spotify-launcher 
+  - spotify-launcher
 
   # Work tools
   - discord_arch_electron
