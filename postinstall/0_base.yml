@@ -5,15 +5,7 @@
 
   vars:
     # Check for update before install
-    appimage_softwares:
-      - name: Neovim
-        exec: nvim
-        url: 'https://github.com/neovim/neovim/releases/download/v0.6.1/nvim.appimage'
-        other_exec: vim
-
-      - name: Bitwarden
-        exec: bitwarden
-        url: 'https://vault.bitwarden.com/download/?app=desktop&platform=linux'
+    appimage_softwares: []
 
   tasks:
     - name: "Install packages"

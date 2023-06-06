@@ -49,11 +49,13 @@ official_softwares:
   - scrot
 
   # CLI software
+  - direnv
   - docker
   - exa
   - git
   - htop
   - jq
+  - neovim
   - p7zip
   - rsync
   - s3cmd
@@ -66,12 +68,12 @@ official_softwares:
   - zsh
 
   # Runtime
-  - jre-openjdk
+  - jdk17-openjdk
   - libpng12
 
   # GUI software
   - alacritty
-  - direnv
+  - bitwarden
   - engrampa
   - eog
   - ffmpegthumbnailer
@@ -121,11 +123,10 @@ aur_softwares:
   - notion-app-enhanced
   - postman-bin
   - pyenv-virtualenv
-    # - spotify # Fuck GPG
-    # - spicetify-cli
+  - spotify-launcher 
 
   # Work tools
-  - slack-desktop
+  - discord_arch_electron
   - skypeforlinux-stable-bin
 
   # My softwares
@@ -141,22 +142,4 @@ services_to_enable:
 user_services_to_enable:
   - ssh-agent
 
-vscode_extensions:
-  - casualjim.gotemplate
-  - cschleiden.vscode-github-actions
-  - editorconfig.editorconfig
-  - esbenp.prettier-vscode
-  - github.copilot
-  - golang.go
-  - irongeek.vscode-env
-  - jackmacwindows.vscode-computercraft
-  - lemmmy.computercraft-extension-pack
-  - mechatroner.rainbow-csv
-  - mihelcic.colored-regions
-  - robbowen.synthwave-vscode
-  - sumneko.lua
-  - tomaciazek.ansible
-  - tyriar.luna-paint
-  - vscodevim.vim
-  - whatwedo.twig
-  - wholroyd.jinja
+vscode_extensions: [] # Use sync, fix this later

@@ -15,7 +15,7 @@
     - name: Create profiles
       become: no
       firefox_profile:
-        name: "default-release"
+        name: "oxodao"
         path: "/home/{{ ansible_user }}/.mozilla/firefox"
         state: present
       register: create_profile
@@ -34,6 +34,13 @@
         - don-t-fuck-with-paste
         - betterttv
         - klorax-retrofuturism
+        - tabliss
+        - vimium-ff
+        - neat-url
+        - decentraleyes
+        - consent-o-matic
+        - search_by_image
+        - react-devtools
 
     # - name: Install user prefs
     #   lineinfile:
